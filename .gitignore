@@ -2,3 +2,4 @@
 *.tfstate*
 *.pem
 **/*.log
+logs*

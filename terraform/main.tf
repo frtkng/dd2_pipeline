@@ -68,6 +68,27 @@ resource "aws_iam_instance_profile" "dd2" {
   role = aws_iam_role.dd2.name
 }
 
+data "aws_iam_policy_document" "cloudwatch" {
+  statement {
+    actions = [
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents"
+    ]
+    resources = ["arn:aws:logs:*:*:*"]
+  }
+}
+
+resource "aws_iam_policy" "cloudwatch" {
+  name   = "${local.project}-cloudwatch"
+  policy = data.aws_iam_policy_document.cloudwatch.json
+}
+
+resource "aws_iam_role_policy_attachment" "cloudwatch" {
+  role       = aws_iam_role.dd2.name
+  policy_arn = aws_iam_policy.cloudwatch.arn
+}
+
 # --- ネットワーク (default VPC) ---
 
 data "aws_vpc" "default" {
