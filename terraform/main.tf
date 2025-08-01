@@ -140,13 +140,14 @@ resource "aws_instance" "dd2" {
 }
 
 # --- scripts/ を S3 へ自動同期 (変更トリガ) ---
+
 resource "null_resource" "sync_scripts" {
   triggers = {
-    scripts_hash = filesha256("${path.root}/scripts")
+    timestamp = timestamp()  # そのたびに更新させる（または外部でコントロール）
   }
 
   provisioner "local-exec" {
-    command = "aws s3 sync ${path.root}/scripts s3://${var.bucket}/DD2/scripts --exact-timestamps"
+    command = "aws s3 sync ${path.module}/../scripts s3://${var.bucket}/DD2/scripts --exact-timestamps"
   }
 
   depends_on = [aws_s3_bucket.dd2, aws_instance.dd2]
